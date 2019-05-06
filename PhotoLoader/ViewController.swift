@@ -96,7 +96,20 @@ final class ViewController: UITableViewController {
             cell.endLoad(image: cachedImage)
         } else {
             if let tempData = tempData {
-                task = session.downloadTask(withResumeData: tempData)
+                task = session.downloadTask(withResumeData: tempData, completionHandler: { (url, response, error) in
+                    guard let url = url else {
+                        return
+                    }
+                    if let image = self.loadImage(by: url) {
+                        DispatchQueue.main.async(execute: {
+                            guard let cell = tableView.cellForRow(at: indexPath) as? TableCell else {
+                                return
+                            }
+                            cell.endLoad(image: image)
+                            self.cache.setObject(image, forKey: stringURL as AnyObject)
+                        })
+                    }
+                })
             } else {
             task = session.downloadTask(with: url, completionHandler: { (url, response, error) in
                 guard let url = url else {
