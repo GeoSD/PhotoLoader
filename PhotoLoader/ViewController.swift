@@ -64,17 +64,6 @@ final class ViewController: UITableViewController {
         self.urls = ViewController.addresses.compactMap { URL(string: $0) }
     }
     
-    //    private func loadImage(by url: URL) -> UIImage? {
-    //        do {
-    //            let data = try Data(contentsOf: url)
-    //            let image = UIImage(data: data)
-    //            return image
-    //        } catch {
-    //            print(error.localizedDescription)
-    //            return nil
-    //        }
-    //    }
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.urls.count
     }
@@ -111,20 +100,20 @@ final class ViewController: UITableViewController {
                     }
                 })
             } else {
-            task = session.downloadTask(with: url, completionHandler: { (url, response, error) in
-                guard let url = url else {
-                    return
-                }
-                if let image = self.loadImage(by: url) {
-                    DispatchQueue.main.async(execute: {
-                        guard let cell = tableView.cellForRow(at: indexPath) as? TableCell else {
-                            return
-                        }
-                        cell.endLoad(image: image)
-                        self.cache.setObject(image, forKey: stringURL as AnyObject)
-                    })
-                }
-            })
+                task = session.downloadTask(with: url, completionHandler: { (url, response, error) in
+                    guard let url = url else {
+                        return
+                    }
+                    if let image = self.loadImage(by: url) {
+                        DispatchQueue.main.async(execute: {
+                            guard let cell = tableView.cellForRow(at: indexPath) as? TableCell else {
+                                return
+                            }
+                            cell.endLoad(image: image)
+                            self.cache.setObject(image, forKey: stringURL as AnyObject)
+                        })
+                    }
+                })
             }
             task.resume()
         }
